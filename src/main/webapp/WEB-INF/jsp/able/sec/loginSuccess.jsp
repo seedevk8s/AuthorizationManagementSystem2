@@ -41,7 +41,7 @@ table, th, td {
 			<!--  왼쪽 메뉴 끝 -->
 
 			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-				<h2>중고차 매매플랫폼</h2>
+				<!-- <h2>중고차 매매플랫폼</h2> -->
                 <img src="https://www.hyundai.com/content/dam/hyundai/kr/ko/images/vehicles/palisade/launching/design/pip-palisade-design-side-design.jpg">
 
 			</div>
