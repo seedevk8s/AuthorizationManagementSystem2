@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : secmgr_GroupMDAO_SQL.xml
+    Description : 그룹 서비스의 데이터를 관리한다.
+
+    Modification Information
+               수정일                 수정자         Version      Query Id
+    ==========  =======  ========   ==============
+    2016.07.01  ADM기술팀          1.0          최초 생성 
+-->
+<mapper namespace="able.secmgr.service.dao.GroupMDAO">
+
+	<resultMap type="able.secmgr.vo.GroupVO" id="groupVOResult" >
+		<result property="id" column="GROUP_ID"/>
+		<result property="name" column="GROUP_NAME"/>
+		<result property="yn" column="GROUP_YN"/>
+		<result property="modUser" column="GROUP_MOD_USER"/>
+		<result property="modDateTime" column="GROUP_MOD_DATETIME"/>
+		<result property="regUser" column="GROUP_REG_USER"/>
+		<result property="regDateTime" column="GROUP_REG_DATETIME"/>
+	</resultMap>
+	
+	<resultMap type="able.secmgr.vo.GroupRoleVO" id="groupRoleVOResult" >
+		<result property="groupId" column="GROUP_ID"/>
+		<result property="roleId" column="ROLE_ID"/>
+		<result property="roleName" column="ROLE_NAME"/>
+		<result property="roleYn" column="ROLE_YN"/>
+		<result property="regUser" column="REG_USER"/>
+		<result property="regDateTime" column="REG_DATETIME"/>
+	</resultMap>
+	
+	<resultMap type="able.secmgr.vo.GroupUserVO" id="groupUserVOResult" >
+		<result property="groupId" column="GROUP_ID"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="userName" column="USER_NAME"/>
+		<result property="userYn" column="USER_YN"/>
+		<result property="regUser" column="REG_USER"/>
+		<result property="regDateTime" column="REG_DATETIME"/>
+	</resultMap>
+	
+	<select id="selectGroupVOList" parameterType="hMap" resultMap="groupVOResult">
+	
+		<!-- paging -->
+		<if test ="offset != null and limit != null">		
+		SELECT * FROM (
+			SELECT ROWNUM AS RNUM, Z.* FROM(
+		
+		</if>
+			
+		        SELECT	GROUP_ID, GROUP_NAME, GROUP_YN,
+		        		GROUP_MOD_USER, GROUP_MOD_DATETIME, GROUP_REG_USER, GROUP_REG_DATETIME
+		          FROM GROUPS
+		
+		<!-- search -->
+		<where>
+			<choose>
+				<when test="qcol == 'id' ">
+					UPPER(GROUP_ID) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'name' ">
+					UPPER(GROUP_NAME) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+			</choose>
+		</where>
+		
+		
+		
+		<!-- order -->
+		<if test="ocol != null">
+			<choose>
+				<when test = "ocol == 'id' ">
+					ORDER BY GROUP_ID
+				</when>
+				<when test = "ocol == 'name' ">
+					ORDER BY GROUP_NAME
+				</when>
+				<when test = "ocol == 'yn' ">
+					ORDER BY GROUP_YN
+				</when>
+				<when test = "ocol == 'modUser' ">
+					ORDER BY GROUP_MOD_USER
+				</when>
+				<when test = "ocol == 'modDate' ">
+					ORDER BY GROUP_MOD_DATETIME
+				</when>
+				<when test = "ocol == 'regUser' ">
+					ORDER BY GROUP_REG_USER 
+				</when>
+				<when test = "ocol == 'regDate' ">
+					ORDER BY GROUP_REG_DATETIME
+				</when>
+			</choose>
+			<if test="order == 'desc'">
+				DESC
+			</if>
+		</if>
+		
+		<!-- paging -->
+		<if test ="offset != null and limit != null">	
+		<![CDATA[
+			) Z
+			WHERE ROWNUM <= #{limit}
+		) WHERE RNUM >= #{offset}
+		]]>		
+		</if>
+		
+	</select>
+	
+	
+	<select id="selectGroupVO" parameterType="hMap" resultMap="groupVOResult">
+        SELECT	GROUP_ID, GROUP_NAME, GROUP_YN,
+        		GROUP_MOD_USER, GROUP_MOD_DATETIME, GROUP_REG_USER, GROUP_REG_DATETIME
+          FROM GROUPS
+         WHERE GROUP_ID = #{id}
+    </select>
+    
+    <insert id="insertGroupVO" parameterType="able.secmgr.vo.GroupVO">
+		INSERT INTO GROUPS(
+						GROUP_ID,
+						GROUP_NAME,
+						GROUP_YN,
+						GROUP_REG_USER,
+						GROUP_REG_DATETIME
+						)
+		VALUES (
+				#{id},
+				#{name},
+				#{yn},
+				#{regUser},
+				SYSDATE
+				)
+	</insert>
+	
+	<update id="updateGroupVO" parameterType="able.secmgr.vo.GroupVO">
+		UPDATE GROUPS
+		SET	GROUP_NAME=#{name},
+			GROUP_YN=#{yn},
+			GROUP_MOD_USER=#{modUser},
+			GROUP_MOD_DATETIME=SYSDATE
+			
+		WHERE GROUP_ID = #{id}
+	</update>
+	
+	<delete id="deleteGroupVO" parameterType="hMap">
+		 DELETE FROM GROUPS
+         WHERE GROUP_ID = #{id}
+	</delete>
+	
+	<select id="selectMaxGroupId" parameterType="hMap" resultType="java.lang.String">
+		SELECT MAX(GROUP_ID) FROM GROUPS
+	</select>
+	
+	<!-- GROUP_ROLES -->
+    <select id="selectGroupRoleVOList" parameterType="hMap" resultMap="groupRoleVOResult">
+	     SELECT G.GROUP_ID, G.ROLE_ID, R.ROLE_NAME, R.ROLE_YN, G.REG_USER, G.REG_DATETIME
+	     FROM GROUP_ROLES G, ROLES R
+	     WHERE G.ROLE_ID = R.ROLE_ID
+	     	AND G.GROUP_ID = #{groupId}
+	     <if test="roleId != null">
+	     	AND G.ROLE_ID = #{roleId}
+	     </if>
+	</select>
+   
+    <insert id="insertGroupRoleVO" parameterType="able.secmgr.vo.GroupRoleVO">
+        INSERT 
+          INTO GROUP_ROLES(
+	               GROUP_ID,
+	               ROLE_ID,
+	               REG_USER,
+	               REG_DATETIME
+	               )
+        VALUES (
+        		#{groupId}, 
+				#{roleId}, 
+				#{regUser},
+				SYSDATE)
+    </insert>
+    
+    <delete id="deleteGroupRoleVO" parameterType="hMap">
+        DELETE FROM GROUP_ROLES
+         WHERE GROUP_ID = #{groupId} AND ROLE_ID = #{roleId}
+    </delete>
+    
+    <select id="selectAddableGroupRoleVOList" parameterType="hMap" resultMap="groupRoleVOResult">
+		<!-- paging -->
+		<if test ="offset != null and limit != null">		
+		SELECT * FROM (
+			SELECT ROWNUM AS RNUM, Z.* FROM(
+		
+		</if>
+
+	    SELECT R.ROLE_ID, R.ROLE_NAME, R.ROLE_YN, R.ROLE_REG_USER REG_USER, R.ROLE_REG_DATETIME REG_DATETIME
+		FROM ROLES R
+		LEFT JOIN GROUP_ROLES G
+		ON (G.GROUP_ID=#{groupId} AND G.ROLE_ID = R.ROLE_ID)
+		WHERE R.ROLE_YN ='Y' AND G.GROUP_ID IS NULL
+		
+		<!-- search -->
+		<choose>
+			<when test="qcol == 'id' ">
+				AND UPPER(R.ROLE_ID) LIKE UPPER(CONCAT('%',#{qval},'%'))
+			</when>
+			<when test="qcol == 'name' ">
+				AND UPPER(R.ROLE_NAME) LIKE UPPER(CONCAT('%',#{qval},'%'))
+			</when>
+		</choose>
+		
+		<!-- paging -->
+		<if test ="offset != null and limit != null">	
+		<![CDATA[
+			) Z
+			WHERE ROWNUM <= #{limit}
+		) WHERE RNUM >= #{offset}
+		]]>		
+		</if>
+	</select>
+    
+    <!-- GROUP_USERS -->
+    <select id="selectGroupUserVOList" parameterType="hMap" resultMap="groupUserVOResult">
+	     SELECT G.GROUP_ID, G.USER_ID, U.USER_NAME, U.USER_YN, G.REG_USER, G.REG_DATETIME
+	     FROM GROUP_USERS G, USERS U
+	     WHERE G.USER_ID = U.USER_ID
+	     	AND G.GROUP_ID = #{groupId}
+	     <if test="roleId != null">
+	     	AND G.USER_ID = #{userId}
+	     </if>
+	</select>
+   
+    <insert id="insertGroupUserVO" parameterType="able.secmgr.vo.GroupUserVO">
+        INSERT 
+          INTO GROUP_USERS(
+	               GROUP_ID,
+	               USER_ID,
+	               REG_USER,
+	               REG_DATETIME
+	               )
+        VALUES (
+        		#{groupId}, 
+				#{userId}, 
+				#{regUser},
+				SYSDATE)
+    </insert>
+    
+    <delete id="deleteGroupUserVO" parameterType="hMap">
+        DELETE FROM GROUP_USERS
+         WHERE GROUP_ID = #{groupId} AND USER_ID = #{userId}
+    </delete>
+    
+    <select id="selectAddableGroupUserVOList" parameterType="hMap" resultMap="groupUserVOResult">
+   	    SELECT U.USER_ID, U.USER_NAME, U.USER_YN, U.USER_REG_USER REG_USER, U.USER_REG_DATETIME REG_DATETIME
+   	    FROM USERS U
+   	    LEFT JOIN GROUP_USERS G
+   	    ON (G.GROUP_ID=#{groupId} AND G.USER_ID = U.USER_ID)
+   	    WHERE U.USER_YN = 'Y' AND G.GROUP_ID IS NULL
+   	    
+   	    <!-- search -->
+		<choose>
+			<when test="qcol == 'id' ">
+				AND UPPER(U.USER_ID) LIKE UPPER(CONCAT('%',#{qval},'%'))
+			</when>
+			<when test="qcol == 'name' ">
+				AND UPPER(U.USER_NAME) LIKE UPPER(CONCAT('%',#{qval},'%'))
+			</when>
+		</choose>
+   	    
+   	    <!-- paging -->
+		<if test ="offset != null and pageUnit != null">
+			LIMIT #{offset},#{pageUnit}
+		</if> 
+	</select>
+    
+</mapper>

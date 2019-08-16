@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : secmgr_RoleMDAO_SQL.xml
+    Description : 권한 서비스의 데이터를 관리한다.
+
+    Modification Information
+               수정일                 수정자         Version      Query Id
+    ==========  =======  ========   ==============
+    2016.07.01  ADM기술팀          1.0          최초 생성 
+-->
+<mapper namespace="able.secmgr.service.dao.RoleMDAO">
+ 
+	<resultMap type="able.secmgr.vo.RoleVO" id="roleVOResult" >
+		<result property="id" column="ROLE_ID"/>
+		<result property="name" column="ROLE_NAME"/>
+		<result property="yn" column="ROLE_YN"/>
+		<result property="desc" column="ROLE_DESC"/>
+		<result property="modUser" column="ROLE_MOD_USER"/>
+		<result property="modDateTime" column="ROLE_MOD_DATETIME"/>
+		<result property="regUser" column="ROLE_REG_USER"/>
+		<result property="regDateTime" column="ROLE_REG_DATETIME"/>
+	</resultMap>
+	
+	<select id="selectRoleVOList" parameterType="hMap" resultMap="roleVOResult">
+        SELECT	ROLE_ID, ROLE_NAME, ROLE_YN, ROLE_DESC, 
+        		ROLE_MOD_USER, ROLE_MOD_DATETIME,
+        		ROLE_REG_USER, ROLE_REG_DATETIME
+          FROM ROLES
+		
+		<!-- search -->
+		<where>
+			<choose>
+				<when test="qcol == 'id' ">
+					UPPER(ROLE_ID) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'name' ">
+					UPPER(ROLE_NAME) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'desc' ">
+					UPPER(ROLE_DESC) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+			</choose>
+		</where>
+		
+		<!-- paging -->
+		<if test ="offset != null and pageUnit != null">
+			LIMIT #{offset},#{pageUnit}
+		</if>
+		
+		<!-- order -->
+		<if test="ocol != null">
+			<choose>
+				<when test = "ocol == 'id' ">
+					ORDER BY ROLE_ID
+				</when>
+				<when test = "ocol == 'name' ">
+					ORDER BY ROLE_NAME
+				</when>
+				<when test = "ocol == 'desc' ">
+					ORDER BY ROLE_DESC
+				</when>
+				<when test = "ocol == 'yn' ">
+					ORDER BY ROLE_YN
+				</when>
+				<when test = "ocol == 'modUser' ">
+					ORDER BY ROLE_MOD_USER
+				</when>
+				<when test = "ocol == 'modDate' ">
+					ORDER BY ROLE_MOD_DATETIME
+				</when>
+				<when test = "ocol == 'regUser' ">
+					ORDER BY ROLE_REG_USER 
+				</when>
+				<when test = "ocol == 'regDate' ">
+					ORDER BY ROLE_REG_DATETIME
+				</when>
+			</choose>
+			<if test="order == 'desc'">
+				DESC
+			</if>
+		</if>
+	</select>
+    
+    <select id="selectRoleVO" parameterType="hMap" resultMap="roleVOResult">
+        SELECT	ROLE_ID, ROLE_NAME, ROLE_YN, ROLE_DESC, 
+        		ROLE_MOD_USER, ROLE_MOD_DATETIME,
+        		ROLE_REG_USER, ROLE_REG_DATETIME
+          FROM ROLES
+         WHERE ROLE_ID = #{id}
+    </select>
+    
+    <insert id="insertRoleVO" parameterType="able.secmgr.vo.RoleVO">
+        INSERT INTO ROLES(
+               ROLE_ID,
+               ROLE_NAME,
+               ROLE_YN,
+               ROLE_DESC,
+               ROLE_REG_USER,
+               ROLE_REG_DATETIME
+               )
+        VALUES (#{id}, 
+               #{name}, 
+               #{yn}, 
+               #{desc},
+               #{regUser},
+               CURRENT_TIMESTAMP)
+    </insert>
+    
+    <update id="updateRoleVO" parameterType="able.secmgr.vo.RoleVO">
+		UPDATE ROLES
+		SET	ROLE_NAME=#{name},
+			ROLE_YN=#{yn},
+			ROLE_DESC=#{desc},
+			ROLE_MOD_USER=#{modUser},
+			ROLE_MOD_DATETIME=CURRENT_TIMESTAMP
+			
+		WHERE ROLE_ID = #{id}
+	</update>
+    
+    <delete id="deleteRoleVO" parameterType="hMap">
+        DELETE FROM ROLES
+         WHERE ROLE_ID = #{id}
+    </delete>
+    
+</mapper>

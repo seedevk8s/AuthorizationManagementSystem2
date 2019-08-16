@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : seclog_CommonLogMDAO_SQL.xml 
+    Description : 공통 로그 서비스의 데이터를 관리한다.
+
+    Modification Information
+               수정일                 수정자         Version      Query Id
+    ==========  =======  ========   ==============
+    2016.07.01  ADM기술팀          1.0          최초 생성 
+-->
+<mapper namespace="able.sec.log.service.dao.CommonLogMDAO">
+    <insert id="insertAuthChangeLog" parameterType="able.sec.log.vo.CommonLogVO">
+        INSERT INTO LOG_AUTH_CHG (
+	               LOG_DT,
+	               SYSTEM,
+	               ADMIN_ID,
+	               USER_ID,
+	               AUTHORITY,
+	               CHANGE_TYPE
+		)
+        VALUES (
+        		CURRENT_TIMESTAMP,
+        		#{system},
+        		#{adminId},
+				#{userId}, 
+				#{authority},
+				#{changeType}	
+		)
+    </insert>
+    
+    <select id="selectRoles" parameterType="String" resultType="String">
+    	SELECT ROLE_ID 
+    		FROM GROUP_ROLES
+    	WHERE GROUP_ID = #{groupId}
+    </select>
+    
+    <select id="selectUsers" parameterType="String" resultType="String">
+    	SELECT USER_ID 
+    		FROM GROUP_USERS
+    	WHERE GROUP_ID = #{groupId}
+    </select>
+    
+    <insert id="insertUseLog" parameterType="able.sec.log.vo.CommonLogVO">
+        INSERT INTO LOG_USE (
+	               LOG_DT,
+	               SYSTEM,
+	               USER_ID,
+	               IP,
+	               MENU_NAME,
+	               USE_TYPE,
+	               URL
+		)
+        VALUES (
+        		CURRENT_TIMESTAMP,
+        		#{system},
+				#{userId}, 
+				#{ip},
+				#{menuName},
+				#{useType},
+				#{url}	
+		)
+    </insert>
+    
+    <insert id="insertLogInOutLog" parameterType="able.sec.log.vo.CommonLogVO">
+        INSERT INTO LOG_LOGINOUT (
+	               LOG_DT,
+	               SYSTEM,
+	               TYPE,
+	               USER_ID,
+	               IP,
+	               SUCCESS_YN
+		)
+        VALUES (
+        		CURRENT_TIMESTAMP,
+        		#{system},
+        		#{type},
+				#{userId}, 
+				#{ip},
+				#{successYn}	
+		)
+    </insert>
+</mapper>

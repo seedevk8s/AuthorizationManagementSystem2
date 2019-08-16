@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security-4.0.xsd">
+
+		<!-- url 검사를 제외할 자원 설정 -->
+		<http pattern="/css/**" security="none"/>
+		<http pattern="/bootstrap/**" security="none"/>
+		<http pattern="/js/**" security="none"/>
+		<http pattern="/images/**" security="none"/>
+		 
+		<!-- 기본 url 설정 및  -->
+		<http use-expressions="true" security-context-repository-ref="reloadableSecurityContextRepository">		
+						
+			<!-- 로그인 처리 설정 -->
+			<form-login login-page="/loginForm.do"
+				login-processing-url="/loginProcess.do"
+				username-parameter="userId"
+				password-parameter="password"
+				always-use-default-target="true"
+				default-target-url="/loginSuccess.do"
+				authentication-failure-url="/loginForm.do?error=true" />
+								
+			<!-- 로그아웃 처리 설정 -->
+			<logout logout-url="/logout.do"
+				logout-success-url="/loginForm.do"
+				invalidate-session="true"
+				delete-cookies="JSESSIONID" />
+			<!--  CSRF 방지 기능 설정 -->
+			<csrf disabled="true"/>
+			<!-- 403 URL 설정 -->
+			<access-denied-handler error-page="/accessDenied.do"/>
+			<!--  Session 관리 설정 -->
+			<session-management>
+				<concurrency-control max-sessions="1" expired-url="/loginForm.do" error-if-maximum-exceeded="false"/>
+			</session-management>
+
+			<custom-filter before="FILTER_SECURITY_INTERCEPTOR" ref="ableWebInvocationPrivilegeEvaluatorProvideFilter"/>
+			<custom-filter after="FILTER_SECURITY_INTERCEPTOR" ref="filterSecurityInterceptor"/>
+		</http>
+		
+		<!-- 인증 서비스 설정 -->		
+		<authentication-manager alias="authenticationManager">
+			<authentication-provider user-service-ref="jdbcUserService">
+				<!-- password encoder 사용 -->
+				<!-- <password-encoder hash="sha-256" base64="true"/> -->
+			</authentication-provider>
+		</authentication-manager>
+		
+		<!-- db, sql 설정 -->
+		<beans:bean id="jdbcUserService" class="org.springframework.security.provisioning.JdbcUserDetailsManager">
+			<beans:property name="dataSource" ref="dataSource" />
+			<beans:property name="usersByUsernameQuery"
+				value = "SELECT user_id, user_pwd, CASE WHEN user_yn='Y' THEN 1 ELSE 0 END
+						FROM users 
+						WHERE user_id = ?"/>
+			<beans:property name="groupAuthoritiesByUsernameQuery" 
+				value = "SELECT g.group_id, g.group_name, gr.role_id 
+						FROM groups g, group_users gu, group_roles gr, roles r 
+						WHERE gu.user_id = ? 
+						AND g.group_yn = 'Y' 
+						AND r.role_yn = 'Y' 
+						AND g.group_id = gu.group_id 
+						AND g.group_id = gr.group_id 
+						AND gr.role_id = r.role_id"/>
+			<beans:property name="enableAuthorities" value="false"/>
+			<beans:property name="enableGroups" value="true"/>
+		</beans:bean>
+		
+		<beans:bean id="ableWebInvocationPrivilegeEvaluatorProvideFilter" class="able.security.intercept.AbleWebInvocationPrivilegeEvaluatorProvideFilter"/>
+		
+		<beans:bean id="webInvocationPrivilegeEvaluator" class="org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator">
+			<beans:constructor-arg ref="filterSecurityInterceptor"/>
+		</beans:bean>
+		
+		<!-- session 유저 정보 리로드 설정 -->
+		<beans:bean id="reloadableSecurityContextRepository" class="able.security.intercept.AbleReloadableHttpSessionSecurityContextRepository">
+			<beans:property name="userDetailsService" ref="jdbcUserService"/>
+			<!-- reload (true/false) -->
+			<beans:property name="reload" value="true" />
+			<!-- reload 주기 -->
+			<beans:property name="cacheSeconds" value="10"/>
+		</beans:bean>
+		
+		<beans:bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+			<beans:property name="observeOncePerRequest" value="false"/>
+			<beans:property name="authenticationManager" ref="authenticationManager"/>
+			<beans:property name="accessDecisionManager" ref="accessDecisionManager"/>
+			<beans:property name="securityMetadataSource" ref="securityMetadataSource"/>
+		</beans:bean>
+		
+		<beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+			<beans:constructor-arg>
+				<beans:list>
+					<beans:ref bean="roleVoter"/>
+					<beans:bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
+				</beans:list>
+			</beans:constructor-arg>
+			<beans:property name="allowIfAllAbstainDecisions" value="false"/>
+		</beans:bean>
+
+		<beans:bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
+			<beans:property name="rolePrefix" value="ROLE_" /> <!--  ROLE_ (default) -->
+		</beans:bean>
+		
+		<!-- url 설정 -->
+		<beans:bean id="securityMetadataSource" class="able.security.intercept.AbleReloadableFilterInvocationSecurityMetadataSource">
+	        <beans:constructor-arg ref="requestMap" />  
+	        <beans:property name="securedObjectService" ref="securedObjectService"/>
+    	</beans:bean>
+		
+		<beans:bean id="requestMap" class="able.security.intercept.UrlResourcesMapFactoryBean" init-method="init">
+        	<beans:property name="securedObjectService" ref="securedObjectService"/>
+    	</beans:bean>
+		
+	   <beans:bean id="securedObjectService" class="able.security.securedobject.impl.SecuredObjectServiceImpl">
+	        <beans:property name="securedObjectDAO" ref="securedObjectDAO"/>
+	        <!-- url 패턴 설정 - ant(default) 또는 regex -->
+	        <beans:property name="requestMatcherType" value="ant"/>   
+	    </beans:bean>
+ 
+ 		<!-- 자원 관리 -->
+	    <beans:bean id="securedObjectDAO" class="able.security.securedobject.impl.SecuredObjectDAO" >
+	        <beans:property name="dataSource" ref="dataSource"/>
+	        <!--  url 제어 sql -->
+	        <beans:property name="sqlRolesAndUrl"
+	        	value = "SELECT rs.res_pattern url, rr.role_id authority
+						FROM resources rs, resource_roles rr, roles r
+						WHERE rs.res_type = 'url'
+						AND rs.res_yn = 'Y' 
+						AND r.role_yn = 'Y'
+						AND rs.res_id = rr.res_id
+						AND rr.role_id = r.role_id
+						ORDER BY rs.res_sort"/>	        	
+			<!--  method 제어 sql -->
+			<beans:property name="sqlRolesAndMethod"
+				value = "SELECT rs.res_pattern method, rr.role_id authority 
+						FROM resources rs, resource_roles rr, roles r 
+						WHERE rs.res_type = 'method' 
+						AND rs.res_yn = 'Y' 
+						AND r.role_yn = 'Y' 
+						AND rs.res_id = rr.res_id 
+						AND rr.role_id = r.role_id 
+						ORDER BY rs.res_sort" />
+			<!--  pointcut 제어 sql -->
+			<beans:property name="sqlRolesAndPointcut"
+				value = "SELECT rs.res_pattern pointcut, rr.role_id authority 
+						FROM resources rs, resource_roles rr, roles r 
+						WHERE rs.res_type = 'pointcut' 
+						AND rs.res_yn = 'Y' 
+						AND r.role_yn = 'Y' 
+						AND rs.res_id = rr.res_id 
+						AND rr.role_id = r.role_id 
+						ORDER BY rs.res_sort" />
+	    </beans:bean>
+		
+		<!-- method 설정 -->
+		<beans:bean id="methodSecurityMetadataSourceAdvisor" class="org.springframework.security.access.intercept.aopalliance.MethodSecurityMetadataSourceAdvisor">
+			<beans:constructor-arg value="methodSecurityInterceptor" />
+			<beans:constructor-arg ref="delegatingMethodSecurityMetadataSource" />
+			<beans:constructor-arg value="delegatingMethodSecurityMetadataSource" />
+		</beans:bean>
+		
+		<beans:bean id="methodSecurityInterceptor" class="org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor">
+			<beans:property name="validateConfigAttributes" value="false" />
+			<beans:property name="authenticationManager" ref="authenticationManager"/>
+			<beans:property name="accessDecisionManager" ref="accessDecisionManager"/>
+			<beans:property name="securityMetadataSource" ref="delegatingMethodSecurityMetadataSource" />
+		</beans:bean>
+		
+		<beans:bean id="delegatingMethodSecurityMetadataSource" class="org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource">
+			<beans:constructor-arg>
+				<beans:list>
+					<beans:ref bean="methodSecurityMetadataSources" />
+					<!--  @Secured 사용 -->
+					<!-- <beans:bean class="org.springframework.security.access.annotation.SecuredAnnotationSecurityMetadataSource" /> -->
+					<!-- JSR250 Annotation 사용 -->
+                	<!-- <beans:bean class="org.springframework.security.access.annotation.Jsr250MethodSecurityMetadataSource" /> -->
+				</beans:list>
+			</beans:constructor-arg>
+		</beans:bean>
+
+		<beans:bean id="methodSecurityMetadataSources" class="org.springframework.security.access.method.MapBasedMethodSecurityMetadataSource">
+			<beans:constructor-arg ref="methodMap" />
+		</beans:bean>
+
+		<beans:bean id="methodMap" class="able.security.intercept.MethodResourcesMapFactoryBean" init-method="init">
+			<beans:property name="securedObjectService" ref="securedObjectService"/>
+			<beans:property name="resourceType" value="method"/>
+		</beans:bean>
+		
+		<!-- pointcut 설정  -->
+		<beans:bean id="protectPointcutPostProcessor" class="able.security.intercept.AbleProtectPointcutPostProcessor">
+			<beans:constructor-arg ref="methodSecurityMetadataSources" />
+			<beans:property name="pointcutMap" ref="pointcutMap"/>
+		</beans:bean>
+ 
+		<beans:bean id="pointcutMap" class="able.security.intercept.MethodResourcesMapFactoryBean" init-method="init">
+			<beans:property name="securedObjectService" ref="securedObjectService"/>
+			<beans:property name="resourceType" value="pointcut"/>
+		</beans:bean>
+		
+</beans:beans>

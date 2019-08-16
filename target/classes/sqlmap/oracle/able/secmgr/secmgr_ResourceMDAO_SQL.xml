@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : secmgr_ResourceMDAO_SQL.xml
+    Description : 리소스 서비스의 데이터를 관리한다.
+
+    Modification Information
+               수정일                 수정자         Version      Query Id
+    ==========  =======  ========   ==============
+    2016.07.01  ADM기술팀          1.0          최초 생성 
+-->
+<mapper namespace="able.secmgr.service.dao.ResourceMDAO">
+
+<resultMap type="able.secmgr.vo.ResourceVO" id="resourceVOResult" >
+		<result property="id" column="RES_ID"/>
+		<result property="name" column="RES_NAME"/>
+		<result property="yn" column="RES_YN"/>
+		<result property="desc" column="RES_DESC"/>
+		<result property="sort" column="RES_SORT"/>
+		<result property="pattern" column="RES_PATTERN"/>
+		<result property="type" column="RES_TYPE"/>
+		<result property="modUser" column="RES_MOD_USER"/>
+		<result property="modDateTime" column="RES_MOD_DATETIME"/>
+		<result property="regUser" column="RES_REG_USER"/>
+		<result property="regDateTime" column="RES_REG_DATETIME"/>
+	</resultMap>
+	
+	<resultMap type="able.secmgr.vo.ResourceRoleVO" id="resourceRoleVOResult" >
+		<result property="resId" column="RES_ID"/>
+		<result property="roleId" column="ROLE_ID"/>
+		<result property="roleName" column="ROLE_NAME"/>
+		<result property="roleYn" column="ROLE_YN"/>
+		<result property="regUser" column="REG_USER"/>
+		<result property="regDateTime" column="REG_DATETIME"/>
+	</resultMap>
+	
+	<select id="selectResourceVOList" parameterType="hMap" resultMap="resourceVOResult">
+
+		<!-- paging -->
+		<if test ="offset != null and limit != null">		
+		SELECT * FROM (
+			SELECT ROWNUM AS RNUM, Z.* FROM(
+		
+		</if>
+		
+        SELECT	RES_ID, RES_NAME, RES_YN, RES_DESC, RES_SORT, RES_PATTERN, RES_TYPE,
+        		RES_MOD_USER, RES_MOD_DATETIME, RES_REG_USER, RES_REG_DATETIME
+          FROM RESOURCES
+		
+		<!-- search -->
+		<where>
+			<choose>
+				<when test="qcol == 'id' ">
+					UPPER(RES_ID) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'name' ">
+					UPPER(RES_NAME) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'desc' ">
+					UPPER(RES_DESC) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'pattern' ">
+					UPPER(RES_PATTERN) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'type' ">
+					UPPER(RES_TYPE) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'sort' ">
+					RES_SORT = #{qval}
+				</when>
+			</choose>
+		</where>
+	
+		<!-- order -->
+		<if test="ocol != null">
+			<choose>
+				<when test = "ocol == 'id' ">
+					ORDER BY RES_ID
+				</when>
+				<when test = "ocol == 'name' ">
+					ORDER BY RES_NAME
+				</when>
+				<when test = "ocol == 'desc' ">
+					ORDER BY RES_DESC
+				</when>
+				<when test = "ocol == 'yn' ">
+					ORDER BY RES_YN
+				</when>
+				<when test = "ocol == 'pattern' ">
+					ORDER BY RES_PATTERN
+				</when>
+				<when test = "ocol == 'sort' ">
+					ORDER BY RES_SORT
+				</when>
+				<when test = "ocol == 'type' ">
+					ORDER BY RES_TYPE
+				</when>
+				<when test = "ocol == 'modUser' ">
+					ORDER BY RES_MOD_USER
+				</when>
+				<when test = "ocol == 'modDate' ">
+					ORDER BY RES_MOD_DATETIME
+				</when>
+				<when test = "ocol == 'regUser' ">
+					ORDER BY RES_REG_USER 
+				</when>
+				<when test = "ocol == 'regDate' ">
+					ORDER BY RES_REG_DATETIME
+				</when>
+			</choose>
+			<if test="order == 'desc'">
+				DESC
+			</if>
+		</if>
+		
+		<!-- paging -->
+		<if test ="offset != null and limit != null">	
+		<![CDATA[
+			) Z
+			WHERE ROWNUM <= #{limit}
+		) WHERE RNUM >= #{offset}
+		]]>		
+		</if>		
+	</select>
+    
+    <select id="selectResourceVO" parameterType="hMap" resultMap="resourceVOResult">
+        SELECT	RES_ID, RES_NAME, RES_YN, RES_DESC, RES_SORT, RES_PATTERN, RES_TYPE,
+        		RES_MOD_USER, RES_MOD_DATETIME, RES_REG_USER, RES_REG_DATETIME
+          FROM RESOURCES
+         WHERE RES_ID = #{id}
+    </select>
+    
+    <insert id="insertResourceVO" parameterType="able.secmgr.vo.ResourceVO">
+		INSERT INTO RESOURCES(
+						RES_ID,
+						RES_NAME,
+						RES_YN,
+						RES_DESC,
+						RES_SORT,
+						RES_PATTERN,
+						RES_TYPE,
+						RES_REG_USER,
+						RES_REG_DATETIME
+						)
+		VALUES (
+				#{id},
+				#{name},
+				#{yn},
+				#{desc},
+				#{sort},
+				#{pattern},
+				#{type},
+				#{regUser},
+				SYSDATE
+				)
+	</insert>
+	
+	<update id="updateResourceVO" parameterType="able.secmgr.vo.ResourceVO">
+		UPDATE RESOURCES
+		SET	RES_NAME=#{name},
+			RES_YN=#{yn},
+			RES_DESC=#{desc},
+			RES_SORT=#{sort},
+			RES_PATTERN=#{pattern},
+			RES_TYPE=#{type},
+			RES_MOD_USER=#{modUser},
+			RES_MOD_DATETIME=SYSDATE
+			
+		WHERE RES_ID = #{id}
+	</update>
+	
+	<delete id="deleteResourceVO" parameterType="hMap">
+		 DELETE FROM RESOURCES
+         WHERE RES_ID = #{id}
+	</delete>
+	
+	<select id="selectMaxResId" parameterType="hMap" resultType="java.lang.String">
+		SELECT MAX(RES_ID) FROM RESOURCES
+	</select>
+	
+	<!-- RESOURCE_ROLES -->
+	<select id="selectResourceRoleVOList" parameterType="hMap" resultMap="resourceRoleVOResult">
+	     SELECT RS.RES_ID, RS.ROLE_ID, R.ROLE_NAME, R.ROLE_YN, RS.REG_USER, RS.REG_DATETIME
+	     FROM RESOURCE_ROLES RS, ROLES R
+	     WHERE RS.ROLE_ID = R.ROLE_ID
+	     	AND RS.RES_ID = #{resId}
+	     <if test="roleId != null">
+	     	AND RS.ROLE_ID = #{roleId}
+	     </if>
+	</select>
+   
+    <insert id="insertResourceRoleVO" parameterType="able.secmgr.vo.ResourceRoleVO">
+        INSERT 
+          INTO RESOURCE_ROLES(
+	               RES_ID,
+	               ROLE_ID,
+	               REG_USER,
+	               REG_DATETIME
+	               )
+        VALUES (
+        		#{resId}, 
+				#{roleId}, 
+				#{regUser},
+				SYSDATE)
+    </insert>
+    
+    <delete id="deleteResourceRoleVO" parameterType="hMap">
+        DELETE FROM RESOURCE_ROLES
+         WHERE RES_ID = #{resId} AND ROLE_ID = #{roleId}
+    </delete>
+    
+    <select id="selectAddableResourceRoleVOList" parameterType="hMap" resultMap="resourceRoleVOResult">
+
+		<!-- paging -->
+		<if test ="offset != null and limit != null">		
+		SELECT * FROM (
+			SELECT ROWNUM AS RNUM, Z.* FROM(
+		
+		</if>
+		
+	    SELECT R.ROLE_ID, R.ROLE_NAME, R.ROLE_YN, R.ROLE_REG_USER REG_USER, R.ROLE_REG_DATETIME REG_DATETIME
+		FROM ROLES R
+		LEFT JOIN RESOURCE_ROLES RR
+		ON (RR.RES_ID=#{resId} AND RR.ROLE_ID = R.ROLE_ID)
+		WHERE R.ROLE_YN ='Y' AND RR.RES_ID IS NULL
+		
+		<!-- search -->
+		<choose>
+			<when test="qcol == 'id' ">
+				AND UPPER(R.ROLE_ID) LIKE UPPER(CONCAT('%',#{qval},'%'))
+			</when>
+			<when test="qcol == 'name' ">
+				AND UPPER(R.ROLE_NAME) LIKE UPPER(CONCAT('%',#{qval},'%'))
+			</when>
+		</choose>
+		
+		<!-- paging -->
+		<if test ="offset != null and limit != null">	
+		<![CDATA[
+			) Z
+			WHERE ROWNUM <= #{limit}
+		) WHERE RNUM >= #{offset}
+		]]>		
+		</if>
+	</select>
+    
+</mapper>

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : secmgr_MenuMDAO_SQL.xml
+    Description : 메뉴 서비스의 데이터를 관리한다.
+
+    Modification Information
+               수정일                 수정자         Version      Query Id
+    ==========  =======  ========   ==============
+    2016.07.01  ADM기술팀          1.0          최초 생성 
+-->
+<mapper namespace="able.secmgr.service.dao.MenuMDAO">
+
+	<resultMap type="able.secmgr.vo.MenuVO" id="menuVOResult" >
+		<result property="id" column="MENU_ID"/>
+		<result property="name" column="MENU_NAME"/>
+		<result property="desc" column="MENU_DESC"/>
+		<result property="yn" column="MENU_YN"/>
+		<result property="link" column="MENU_LINK"/>
+		<result property="modUser" column="MENU_MOD_USER"/>
+		<result property="modDateTime" column="MENU_MOD_DATETIME"/>
+		<result property="regUser" column="MENU_REG_USER"/>
+		<result property="regDateTime" column="MENU_REG_DATETIME"/>
+	</resultMap>
+	
+	<resultMap type="able.secmgr.vo.MenuRoleVO" id="menuRoleVOResult" >
+		<result property="menuId" column="MENU_ID"/>
+		<result property="roleId" column="ROLE_ID"/>
+		<result property="roleName" column="ROLE_NAME"/>
+		<result property="roleYn" column="ROLE_YN"/>
+		<result property="regUser" column="REG_USER"/>
+		<result property="regDateTime" column="REG_DATETIME"/>
+	</resultMap>
+	
+	<select id="selectMenuVOList" parameterType="hMap" resultMap="menuVOResult">
+ 		<!-- paging -->
+		<if test ="offset != null and limit != null">		
+		SELECT * FROM (
+			SELECT ROWNUM AS RNUM, Z.* FROM(
+		
+		</if>
+ 
+        SELECT	MENU_ID, MENU_NAME, MENU_YN, MENU_DESC, MENU_LINK,
+        		MENU_MOD_USER, MENU_MOD_DATETIME, 
+        		MENU_REG_USER, MENU_REG_DATETIME
+          FROM MENU
+		
+		<!-- search -->
+		<where>
+			<choose>
+				<when test="qcol == 'id' ">
+					UPPER(MENU_ID) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'name' ">
+					UPPER(MENU_NAME) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'link' ">
+					UPPER(MENU_LINK) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+				<when test="qcol == 'desc' ">
+					UPPER(MENU_DESC) LIKE UPPER(CONCAT('%',#{qval},'%'))
+				</when>
+			</choose>
+		</where>
+		
+		<!-- order -->
+		<if test="ocol != null">
+			<choose>
+				<when test = "ocol == 'id' ">
+					ORDER BY MENU_ID
+				</when>
+				<when test = "ocol == 'name' ">
+					ORDER BY MENU_NAME
+				</when>
+				<when test = "ocol == 'desc' ">
+					ORDER BY MENU_DESC
+				</when>
+				<when test = "ocol == 'yn' ">
+					ORDER BY MENU_YN
+				</when>
+				<when test = "ocol == 'link' ">
+					ORDER BY MENU_LINK
+				</when>
+				<when test = "ocol == 'modUser' ">
+					ORDER BY MENU_MOD_USER
+				</when>
+				<when test = "ocol == 'modDate' ">
+					ORDER BY MENU_MOD_DATETIME
+				</when>
+				<when test = "ocol == 'regUser' ">
+					ORDER BY MENU_REG_USER 
+				</when>
+				<when test = "ocol == 'regDate' ">
+					ORDER BY MENU_REG_DATETIME
+				</when>
+			</choose>
+			<if test="order == 'desc'">
+				DESC
+			</if>
+		</if>
+		
+		<!-- paging -->
+		<if test ="offset != null and limit != null">	
+		<![CDATA[
+			) Z
+			WHERE ROWNUM <= #{limit}
+		) WHERE RNUM >= #{offset}
+		]]>		
+		</if>
+				
+	</select>
+	
+    <select id="selectMenuVO" parameterType="hMap" resultMap="menuVOResult">
+        SELECT	MENU_ID, MENU_NAME, MENU_YN, MENU_DESC, MENU_LINK,
+        		MENU_MOD_USER, MENU_MOD_DATETIME, 
+        		MENU_REG_USER, MENU_REG_DATETIME
+          FROM MENU
+         WHERE MENU_ID = #{id}
+    </select>
+    
+    <insert id="insertMenuVO" parameterType="able.secmgr.vo.MenuVO">
+		INSERT INTO MENU(
+						MENU_ID,
+						MENU_NAME,
+						MENU_YN,
+						MENU_DESC,
+						MENU_LINK,
+						MENU_REG_USER,
+						MENU_REG_DATETIME
+						)
+		VALUES (
+				#{id},
+				#{name},
+				#{yn},
+				#{desc},
+				#{link},
+				#{regUser},
+				SYSDATE
+				)
+	</insert>
+	
+	<update id="updateMenuVO" parameterType="able.secmgr.vo.MenuVO">
+		UPDATE MENU
+		SET	MENU_NAME=#{name},
+			MENU_YN=#{yn},
+			MENU_DESC=#{desc},
+			MENU_LINK=#{link},
+			MENU_MOD_USER=#{modUser},
+			MENU_MOD_DATETIME=SYSDATE
+			
+		WHERE MENU_ID = #{id}
+	</update>
+	
+	<delete id="deleteMenuVO" parameterType="hMap">
+		 DELETE FROM MENU
+         WHERE MENU_ID = #{id}
+	</delete>
+	
+	<select id="selectMaxMenuId" parameterType="hMap" resultType="java.lang.String">
+		SELECT MAX(MENU_ID) FROM MENU
+	</select>
+	
+	<!-- MENU_ROLES -->
+	<select id="selectMenuRoleVOList" parameterType="hMap" resultMap="menuRoleVOResult">
+	     SELECT M.MENU_ID, M.ROLE_ID, R.ROLE_NAME, R.ROLE_YN, M.REG_USER, M.REG_DATETIME
+	     FROM MENU_ROLES M, ROLES R
+	     WHERE M.ROLE_ID = R.ROLE_ID
+	     	AND M.MENU_ID = #{menuId}
+	     <if test="roleId != null">
+	     	AND M.ROLE_ID = #{roleId}
+	     </if>
+	</select>
+   
+    <insert id="insertMenuRoleVO" parameterType="able.secmgr.vo.MenuRoleVO">
+        INSERT 
+          INTO MENU_ROLES(
+	               MENU_ID,
+	               ROLE_ID,
+	               REG_USER,
+	               REG_DATETIME
+	               )
+        VALUES (
+        		#{menuId}, 
+				#{roleId}, 
+				#{regUser},
+				SYSDATE)
+    </insert>
+    
+    <delete id="deleteMenuRoleVO" parameterType="hMap">
+        DELETE FROM MENU_ROLES
+         WHERE MENU_ID = #{menuId} AND ROLE_ID = #{roleId}
+    </delete>
+    
+    <select id="selectAddableMenuRoleVOList" parameterType="hMap" resultMap="menuRoleVOResult">
+
+		<!-- paging -->
+		<if test ="offset != null and limit != null">		
+		SELECT * FROM (
+			SELECT ROWNUM AS RNUM, Z.* FROM(
+		
+		</if>
+
+	    SELECT R.ROLE_ID, R.ROLE_NAME, R.ROLE_YN, R.ROLE_REG_USER REG_USER, R.ROLE_REG_DATETIME REG_DATETIME
+		FROM ROLES R
+		LEFT JOIN MENU_ROLES M
+		ON (M.MENU_ID=#{menuId} AND M.ROLE_ID = R.ROLE_ID)
+		WHERE R.ROLE_YN ='Y' AND M.MENU_ID IS NULL
+		
+		<!-- search -->
+		<choose>
+			<when test="qcol == 'id' ">
+				AND UPPER(R.ROLE_ID) LIKE UPPER(CONCAT('%',#{qval},'%'))
+			</when>
+			<when test="qcol == 'name' ">
+				AND UPPER(R.ROLE_NAME) LIKE UPPER(CONCAT('%',#{qval},'%'))
+			</when>
+		</choose>
+		
+		<!-- paging -->
+		<if test ="offset != null and limit != null">	
+		<![CDATA[
+			) Z
+			WHERE ROWNUM <= #{limit}
+		) WHERE RNUM >= #{offset}
+		]]>		
+		</if>
+	</select>
+    
+</mapper>
