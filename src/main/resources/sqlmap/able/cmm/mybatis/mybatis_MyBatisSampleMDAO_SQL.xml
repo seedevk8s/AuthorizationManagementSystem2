@@ -14,6 +14,20 @@
 
 <mapper namespace="able.cmm.mybatis.service.dao.MyBatisSampleMDAO">
 
+    <!-- 
+        Query ID : selectMyBatisList
+        Description : mybatis 테이블의 목록을 조회한다.
+     -->
+     <select id="selectMyBatisList" parameterType="hMap" resultType="hMap">
+        
+        <![CDATA[
+            SELECT ID, NAME, DESCRIPTION, USE_YN, REG_USER
+            FROM SAMPLE
+            LIMIT #{limit} OFFSET #{offset}        
+        ]]>
+     
+     </select>
+     
 </mapper>
 
 

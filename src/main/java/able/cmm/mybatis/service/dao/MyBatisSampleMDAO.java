@@ -1,6 +1,9 @@
 package able.cmm.mybatis.service.dao;
 
+import java.util.List;
+
 import able.com.mybatis.Mapper;
+import able.com.vo.HMap;
 
 /**
  * <pre>
@@ -23,6 +26,14 @@ import able.com.mybatis.Mapper;
 
 @Mapper("myBatisSampleMDAO")
 public interface MyBatisSampleMDAO {
+
+    /**
+     * 글 목록을 조회한다.
+     *
+     * @param hmap
+     * @return
+     */
+    List<?> selectMyBatisList(HMap hmap) throws Exception;
 
 }
 

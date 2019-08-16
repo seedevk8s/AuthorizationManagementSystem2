@@ -1,7 +1,13 @@
 package able.cmm.mybatis.service.impl;
 
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import able.cmm.mybatis.service.MyBatisSampleService;
+import able.cmm.mybatis.service.dao.MyBatisSampleMDAO;
 import able.com.service.HService;
+import able.com.vo.HMap;
 
 import org.springframework.stereotype.Service;
 
@@ -25,6 +31,22 @@ import org.springframework.stereotype.Service;
  */
 @Service("myBatisSampleService")
 public class MyBatisSampleServiceImpl extends HService implements MyBatisSampleService{
+    
+    
+    /**
+     * MyBatis 샘플을 위한 db 연동 처리
+     */
+    @Resource(name = "myBatisSampleMDAO")
+    private MyBatisSampleMDAO myBatisSampleMDAO;
+
+    /*
+     * mybatis 데이터 목록을 조회한다.
+     */
+    @Override
+    public List<?> selectMyBatisList(HMap hmap) throws Exception {
+        
+        return myBatisSampleMDAO.selectMyBatisList(hmap);
+    }
 
 }
 

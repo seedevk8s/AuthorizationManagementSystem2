@@ -1,5 +1,9 @@
 package able.cmm.mybatis.service;
 
+import java.util.List;
+
+import able.com.vo.HMap;
+
 /**
  * <pre>
  * Statements
@@ -20,6 +24,14 @@ package able.cmm.mybatis.service;
  */
 
 public interface MyBatisSampleService {
+
+    /**
+     * 글 목록을 조회한다.
+     *
+     * @param hmap
+     * @return
+     */
+    List<?> selectMyBatisList(HMap hmap)throws Exception;
     
 }
 
