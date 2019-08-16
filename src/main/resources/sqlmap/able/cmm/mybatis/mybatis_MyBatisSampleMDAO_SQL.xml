@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+    SQL File Name : mybatis_MyBatisSampleMDAO_sql.xml  
+    Description : mybatis 데이터를 관리한다.(등록, 수정, 삭제 및 조회쿼리)
+    author hojin
+    since 2019. 8. 16.
+    version 1.0
+    Modification Information
+       since          author              description
+    ===========    =============    ===========================
+    2019. 8. 16.     hojin  		   최초 생성
+-->
+
+<mapper namespace="able.cmm.mybatis.service.dao.MyBatisSampleMDAO">
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

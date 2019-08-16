@@ -3,6 +3,14 @@
 <div class="col-sm-3 col-md-2 sidebar">
   <ul class="nav nav-sidebar">
   
+      <c:choose>
+        <c:when test="${menuId==7 }">
+        <li class="active"><a href="<c:url value='/cmm/mybatis/selectMyBatisList.do'/>">마이바티스(MyBatis) <span class="sr-only">(current)</span></a></li>
+        </c:when>
+        <c:otherwise>
+        <li><a href="<c:url value='/cmm/mybatis/selectMyBatisList.do'/>">마이바티스(MyBatis)</a></li>   
+        </c:otherwise>
+    </c:choose>
     <c:choose>
         <c:when test="${menuId==6 }">
         <li class="active"><a href="<c:url value='/cmm/crypto/sampleSHA256.do'/>">Encryption & Decryption<span class="sr-only">(current)</span></a></li>
