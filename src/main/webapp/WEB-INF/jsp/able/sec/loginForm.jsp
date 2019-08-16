@@ -64,7 +64,9 @@ body {
 <body>
 
 <c:if test="${param.error == 'true'}">
-	<strong>아이디와 암호가 일치하지 않습니다.</strong>
+	<strong>아이디와 암호가 일치하지 않습니다.<br> 
+            다시 확인해 주세요.
+    </strong>
 </c:if>
 
 
