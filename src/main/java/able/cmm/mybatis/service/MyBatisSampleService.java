@@ -32,6 +32,14 @@ public interface MyBatisSampleService {
      * @return
      */
     List<?> selectMyBatisList(HMap hmap)throws Exception;
+
+    /**
+     * 총 게시물 건수
+     *
+     * @param hmap
+     * @return
+     */
+    int selectMyBatisListTotCnt(HMap hmap)throws Exception;
     
 }
 

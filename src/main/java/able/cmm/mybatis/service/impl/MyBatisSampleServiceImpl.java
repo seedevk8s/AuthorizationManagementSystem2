@@ -48,6 +48,15 @@ public class MyBatisSampleServiceImpl extends HService implements MyBatisSampleS
         return myBatisSampleMDAO.selectMyBatisList(hmap);
     }
 
+    /*
+     * 총 게시물 건수
+     */
+    @Override
+    public int selectMyBatisListTotCnt(HMap hmap) throws Exception {
+        
+        return myBatisSampleMDAO.selectMyBatisListToCnt(hmap);
+    }
+
 }
 
 

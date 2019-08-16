@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import able.cmm.mybatis.service.MyBatisSampleService;
 import able.com.vo.HMap;
 import able.com.web.HController;
+import able.com.web.view.PagingInfo;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -50,6 +51,13 @@ public class MyBatisSampleController extends HController{
         hmap.put("offset", 15 * (currPage - 1));       
         
         List<?> resultList =  myBatisSampleService.selectMyBatisList(hmap);
+        
+        //페이징 정보
+        PagingInfo bbsMasterPage = new PagingInfo();
+        
+        // 총 게시물 건수는 별도로 조회해야 한다.
+        bbsMasterPage.setTotalRecordCount(myBatisSampleService.selectMyBatisListTotCnt(hmap));
+        
         
         
         

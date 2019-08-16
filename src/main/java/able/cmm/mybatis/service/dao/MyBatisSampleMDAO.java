@@ -35,7 +35,49 @@ public interface MyBatisSampleMDAO {
      */
     List<?> selectMyBatisList(HMap hmap) throws Exception;
 
+    /**
+     * List 총 갯수
+     *
+     * @param hmap
+     * @return
+     */
+    int selectMyBatisListToCnt(HMap hmap)throws Exception;
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

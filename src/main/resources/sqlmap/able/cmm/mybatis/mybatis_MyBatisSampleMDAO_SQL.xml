@@ -28,6 +28,19 @@
      
      </select>
      
+     
+     <!-- 
+        Query ID : selectMyBatisListTotCnt
+        Description : mybatis 테이블의 목록조회 총 건수
+     --> 
+     <select id="selectMyBatisListToCnt" parameterType="hMap" resultType="int">
+        
+        <![CDATA[
+            SELECT COUNT(ID) CNT
+            FROM SAMPLE  
+        ]]>
+     </select>    
+     
 </mapper>
 
 
