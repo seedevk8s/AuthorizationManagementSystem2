@@ -71,14 +71,45 @@ body {
     <div class="container">
 
       <form class="form-signin" action="<c:url value='/loginProcess.do'/>" method="post">
-        <h2 class="form-signin-heading">Please sign in</h2>
-        <label for="userId" class="sr-only">Login ID</label>
-        <input type="text" name="userId" id="userId" class="form-control" placeholder="Login ID" required autofocus>
-        <label for="password" class="sr-only">Password</label>
-        <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <h2 class="form-signin-heading">로그인 서비스</h2>
+        <label for="userId" class="sr-only">로그인 ID</label>
+        <input type="text" name="userId" id="userId" class="form-control" placeholder="로그인 ID" required autofocus>
+        <label for="password" class="sr-only">패스워드</label>
+        <input type="password" name="password" id="password" class="form-control" placeholder="패스워드" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">로그인</button>
       </form>
 
     </div> 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
