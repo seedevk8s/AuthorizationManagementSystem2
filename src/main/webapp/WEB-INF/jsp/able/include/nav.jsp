@@ -12,12 +12,14 @@
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">          	
-            
+          <ul class="nav navbar-nav navbar-right">    
+                <li><a href="<c:url value='/logout.do'/>">회원가입</a></li>  	
+                <li><a href="<c:url value='/logout.do'/>">고객센터</a></li>
             <sec:authorize access="isAuthenticated()">
-            <li><a href="<c:url value='/loginSuccess.do'/>"><sec:authentication property="principal.username"/>님 안녕하세요!</a></li>
-            <li><a href="<c:url value='/logout.do'/>">logout</a></li>
+                <li><a href="<c:url value='/loginSuccess.do'/>"><sec:authentication property="principal.username"/>님 안녕하세요!</a></li>
+                <li><a href="<c:url value='/logout.do'/>">logout</a></li>
             </sec:authorize>
+                <li><a href="<c:url value='/logout.do'/>">이벤트</a></li>
             
           </ul>
         </div>
