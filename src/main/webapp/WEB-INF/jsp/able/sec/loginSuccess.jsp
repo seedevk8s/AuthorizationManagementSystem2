@@ -13,7 +13,7 @@
 <!-- jQuery -->
 <script src="<c:url value='/js/jquery/jquery-2.1.4.min.js'/>" ></script>
 
-<title>로그인 성공 (Test page)</title>
+<title>현대글로비스 AutoBell 중고차매매</title>
 
 <style type="text/css">
 table {
@@ -36,7 +36,7 @@ table, th, td {
 		<div class="row">
 
 			<!--  왼쪽 메뉴 시작 -->
-			<c:set var="menuId" value="1" />
+			<c:set var="menuId" value="8" />
 			<%@include file="/WEB-INF/jsp/able/include/menu.jsp"%>
 			<!--  왼쪽 메뉴 끝 -->
 

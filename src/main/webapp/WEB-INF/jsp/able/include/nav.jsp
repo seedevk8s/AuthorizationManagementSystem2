@@ -8,7 +8,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="<c:url value='/loginSuccess.do'/>">AutoBell 중고차매매</a>
+          <a class="navbar-brand" href="<c:url value='/loginSuccess.do'/>">현대글로비스 AutoBell 중고차매매</a>
         </div>
 
         <div id="navbar" class="navbar-collapse collapse">
