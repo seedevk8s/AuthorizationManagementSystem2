@@ -58,6 +58,14 @@ body {
   border-top-right-radius: 0;
 }
 
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+    padding: 2px;
+}
 </style>
 
 </head>
@@ -69,6 +77,9 @@ body {
     </strong>
 </c:if>
 
+    <!-- 상단 메뉴 시작 -->
+    <%@include file="/WEB-INF/jsp/able/include/nav2.jsp"%>
+    <!-- 상단 메뉴 끝 -->    
 
     <div class="container">
 
