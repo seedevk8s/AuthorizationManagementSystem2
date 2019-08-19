@@ -82,15 +82,27 @@ table, th, td {
     <!-- 상단 메뉴 끝 -->    
 
     <div class="container">
-
-      <form class="form-signin" action="<c:url value='/loginProcess.do'/>" method="post">
-        <h2 class="form-signin-heading">로그인 서비스</h2>
-        <label for="userId" class="sr-only">로그인 ID</label>
-        <input type="text" name="userId" id="userId" class="form-control" placeholder="로그인 ID" required autofocus>
-        <label for="password" class="sr-only">패스워드</label>
-        <input type="password" name="password" id="password" class="form-control" placeholder="패스워드" required>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">로그인</button>
-      </form>
+        <div class="row">       
+              <form class="form-signin" action="<c:url value='/loginProcess.do'/>" method="post">
+                <h2 class="form-signin-heading">로그인 서비스</h2>
+                <label for="userId" class="sr-only">로그인 ID</label>
+                <input type="text" name="userId" id="userId" class="form-control" placeholder="로그인 ID" required autofocus>
+                <label for="password" class="sr-only">패스워드</label>
+                <input type="password" name="password" id="password" class="form-control" placeholder="패스워드" required>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">로그인</button>
+              </form>
+              
+                <!--  왼쪽 메뉴 시작 -->
+                <c:set var="menuId" value="8" />
+                <%@include file="/WEB-INF/jsp/able/include/menu.jsp"%>
+                <!--  왼쪽 메뉴 끝 -->
+                          
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    <!-- <h2>중고차 매매플랫폼</h2> -->
+                    <img src="https://www.hyundai.com/content/dam/hyundai/kr/ko/images/vehicles/palisade/launching/design/pip-palisade-design-side-design.jpg">
+        
+                </div>                               
+        </div>
 
     </div> 
 </body>
