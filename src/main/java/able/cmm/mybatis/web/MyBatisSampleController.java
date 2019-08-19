@@ -58,6 +58,8 @@ public class MyBatisSampleController extends HController{
         // 총 게시물 건수는 별도로 조회해야 한다.
         bbsMasterPage.setTotalRecordCount(myBatisSampleService.selectMyBatisListTotCnt(hmap));
         
+        // 페이지수 표시할 건수와 한페이지당 뿌릴 건수는 property에서 조회함
+        
         
         
         
