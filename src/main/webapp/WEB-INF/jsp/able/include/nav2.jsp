@@ -13,7 +13,7 @@
 
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">    
-                <li><a href="<c:url value='/logout.do'/>">회원가입</a></li>  	
+                <li><a href="<c:url value='/cmm/user/showUserForm2.do'/>">회원가입</a></li>  	
                 <li><a href="<c:url value='/logout.do'/>">고객센터</a></li>
             <sec:authorize access="isAuthenticated()">
                 <li><a href="<c:url value='/loginSuccess.do'/>"><sec:authentication property="principal.username"/>님 안녕하세요!</a></li>

@@ -5,10 +5,10 @@
   
     <c:choose>
         <c:when test="${menuId==8 }">
-        <li class="active"><a href="<c:url value='/secmgr/user/selectUserList.do'/>">내차사기<span class="sr-only">(current)</span></a></li>
+        <li class="active"><a href="<c:url value='/secmgr/user/buyCarSearchList.do'/>">내차사기<span class="sr-only">(current)</span></a></li>
         </c:when>
         <c:otherwise>
-        <li><a href="<c:url value='/secmgr/user/selectUserList.do'/>">내차사기</a></li>   
+        <li><a href="<c:url value='/secmgr/user/buyCarSearchList.do'/>">내차사기</a></li>   
         </c:otherwise>
     </c:choose>  
     
